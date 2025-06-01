@@ -1,0 +1,45 @@
+.container {
+    
+    flex-direction: wrap; /* Stack child elements vertically */
+    justify-content: center;
+    align-items: flex-start;
+    height: 100vh; /* Set the container height to 100% of the viewport height */
+}
+
+.grid-container {
+  
+   
+
+    grid-template-columns: repeat(3, 1fr); /* 3 columns */
+    grid-auto-rows: 250px; /* Fixed row height */
+    gap: 10px; /* Gap between grid items */
+  
+    margin-left: calc(200px + 20px);
+}
+
+.grid-item {
+    display: inline-block;
+    width: 350px;
+    height: 250px;
+    overflow: hidden;
+}
+
+.icon-container {
+    width: 350px;
+    height: 250px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease; /* Add hover effect */
+    border-radius: 30px;
+}
+
+.icon-container img {
+    width: 350px;
+    height: 250px;
+    object-fit: cover;
+}
+
+.icon-container:hover {
+    transform: scale(1.05); /* Pop out effect on hover */
+   
+}

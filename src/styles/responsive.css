@@ -1,0 +1,49 @@
+@media screen and (max-width: 768px) {
+    .navbar {
+        width: 100%;
+        height: auto;
+        position: static;
+    }
+    
+    .navbar a {
+        display: inline-block;
+        width: 100%;
+        box-sizing: border-box;
+    }
+        .toggle-btn {
+        display: block;
+    }
+    
+    .navbar-links {
+        display: none;
+    }
+    
+    .navbar.active .navbar-links {
+        display: block;
+    }
+}
+
+
+/* Responsive styles for smaller screens */
+@media screen and (max-width: 768px) {
+    .about-content {
+        padding: 15px; /* Adjust padding for smaller screens */
+    }
+}
+
+/* Additional responsive styles for even smaller screens if needed */
+@media screen and (max-width: 480px) {
+    .about-content {
+        max-width: 100%; /* Set maximum width to 100% for smaller screens */
+        padding: 10px; /* Further adjust padding for smaller screens */
+    }
+}
+
+.toggle-btn {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
