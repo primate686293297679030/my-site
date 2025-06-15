@@ -1,0 +1,57 @@
+ private void InstantiateBubbles()
+ {      
+     for (int j = 0; j < numberOfBubbles; j++)
+     {
+         GameObject bubbleGO = Instantiate(bubblePrefab, transform);
+         RectTransform bubbleRect = bubbleGO.GetComponent<RectTransform>();
+         float randomX = UnityEngine.Random.Range(-canvasRect.rect.width * 0.5f, canvasRect.rect.width * 0.5f);
+         float randomY = UnityEngine.Random.Range(-canvasRect.rect.height * 1.75f, -canvasRect.rect.height*0.75f);
+         bubbleRect.anchoredPosition = new Vector2(randomX, randomY);
+         bubbleRect.localScale = Vector3.zero;              
+         float randomScale = UnityEngine.Random.Range(0.5f, 1.5f);
+         bubbleRect.localScale = new Vector3(randomScale, randomScale, 1f);
+
+         // Store the initial state of the bubble
+         BubbleState bubbleState = new BubbleState
+         {
+             initialPosition = bubbleRect.anchoredPosition,
+             initialScale = bubbleRect.localScale
+         };
+         bubbleStates.Add(bubbleState);
+         bubblesRect.Add(bubbleRect);
+     }
+ 
+         randomValues = GenerateUniqueRandoms(minimumSpeed, maximumSpeed, bubblesRect.Count);
+
+ }
+
+ private void Update()
+ {
+     if (isMoving)
+     {
+         // Wrap the bubble around the screen vertically
+         bool tmp = false;
+         for (int i = 0; i < bubblesRect.Count; i++)
+         {
+             float time = (Time.time * randomValues[i]) % animationDuration; // Scale time by random value
+             float v = Mathf.Lerp(-3f, 3f, Mathf.PingPong(time / animationDuration, 1f));
+             sineAnim(v, i);
+             MoveUpwards(randomValues[i],i);
+             if (bubblesRect[i].anchoredPosition.y < canvasRect.rect.height*0.75f)
+             {
+
+                 tmp = true;
+             }
+         }
+         if (!tmp)
+         {
+         settingsBackButton.enabled = true;
+         settings.enabled=true;
+         StopWrapping();
+             for(int i= 0; i <bubblesRect.Count; i++)
+             ResetBubblesToInitialPositions(i);
+         }
+        
+
+     }
+ }
