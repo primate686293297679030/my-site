@@ -7,13 +7,26 @@ const githubRepoOwner = "primate686293297679030"; // <-- change this
 const githubRepoName = "HamraGrodor";    // <-- change this
 const githubDefaultBranch = "main";      // or "master" or your branch
 
-// === PROJECT DATA: Each project now has 'presentations' array ===
+// === PROJECT DATA: Each project now has 'introText' and 'introImage' fields ===
 const projects = [
   {
     title: "Project One",
-    image: "/project1-thumb.jpg",
-    description: "A short description of Project One. This project demonstrates X, Y, and Z.",
-    presentations: [
+    image: "/hgr.png",
+    description: "HamraGrodor, sort of a wack a mole game that was a part of my LIA",
+       introText:[ 
+"  I worked on this project for 4 months and it was a 100% solo project besides creation of most graphics ",
+"Things worth to mention is:",
+" That the project was organized within Unitys UI framework",
+"And then combined with this: float currentAspect = (float)Screen.width / Screen.height;",
+"So that the game can be played on different phones that varies in screensizes  ",
+"",
+"It contains animations that mostly utilize the DOtween library.",
+"It has a save function for your different scores, by using unityprefs",
+"It has 8 buffs 4 which give a negative effect and 4 which gives a positive effect.",
+"The sun is a shader I assembled with the help of ChatGPT.",
+
+       ],introImage: "/project1-header.jpg", // Optional, can be omitted
+     presentations: [
       {
         videoSrc: "/MyVideo_12.mp4",
         label: "PulsatingTouch",
@@ -46,10 +59,76 @@ const projects = [
       }
     ]
   },
+   {
+    title: "",
+    image: "_Z75OQ.png",
+    description: "Game Project 2",
+    introText: "Gameproject 3 at futuregames",
+    // introImage: "/project2-header.jpg", // You can add this if you have an image
+    presentations: [
+      {
+        videoSrc: "/MyVideo_13.mp4",
+        label: "Physics",
+        codeFiles: [
+          {
+            githubFilePath: "Assets/Scripts/AnotherManager.cs",
+            githubLine: 22,
+            language: "csharp",
+            label: "AnotherManager.cs (Line 22)"
+          }
+        ]
+      }
+    ]
+  },
   {
-    title: "Project Two",
-    image: "/project2-thumb.jpg",
-    description: "A brief summary of Project Two. Focusing on A, B, and C.",
+    title: "",
+    image: "/11hQRA.png",
+    description: "Game Project 3",
+    introText: "Gameproject 3 at futuregames",
+    // introImage: "/project2-header.jpg", // You can add this if you have an image
+    presentations: [
+      {
+        videoSrc: "/MyVideo_13.mp4",
+        label: "Physics",
+        codeFiles: [
+          {
+            githubFilePath: "Assets/Scripts/AnotherManager.cs",
+            githubLine: 22,
+            language: "csharp",
+            label: "AnotherManager.cs (Line 22)"
+          }
+        ]
+      }
+    ]
+  },
+ 
+   {
+    title: "",
+    image: "/swa_UZ.png",
+    description: "Game Project 4.",
+    introText: "Gameproject 3 at futuregames",
+    // introImage: "/project2-header.jpg", // You can add this if you have an image
+    presentations: [
+      {
+        videoSrc: "/MyVideo_13.mp4",
+        label: "Physics",
+        codeFiles: [
+          {
+            githubFilePath: "Assets/Scripts/AnotherManager.cs",
+            githubLine: 22,
+            language: "csharp",
+            label: "AnotherManager.cs (Line 22)"
+          }
+        ]
+      }
+    ]
+  },
+   {
+    title: "",
+    image: "/ecsSpacegame.png",
+    description: "Unity Entity Component System.",
+    introText: "Gameproject 3 at futuregames",
+    // introImage: "/project2-header.jpg", // You can add this if you have an image
     presentations: [
       {
         videoSrc: "/MyVideo_13.mp4",
@@ -100,6 +179,7 @@ function getLinesFromCode(code, start, end) {
   const lines = code.split('\n');
   return lines.slice(start - 1, end).join('\n');
 }
+
 
 // --- Project Presentation Card ---
 function ProjectPresentation({ project, onBack }) {
@@ -238,6 +318,29 @@ function ProjectPresentation({ project, onBack }) {
           position: "relative"
         }}
       >
+        {/* --- Intro Section: SHOWN ABOVE VIDEO PREVIEW --- */}
+        {(project.introText || project.introImage) && (
+          <div style={{ padding: "32px 24px 0 24px", textAlign: "center" }}>
+            {project.introImage && (
+              <img
+                src={project.introImage}
+                alt={project.title + " header"}
+                style={{ maxWidth: 280, borderRadius: 10, marginBottom: 12 }}
+              />
+            )}
+            {project.introText && (
+  <div style={{ color: "#fff", fontSize: "1.15em", marginBottom: 12, textAlign: "left" }}>
+    {Array.isArray(project.introText)
+      ? project.introText.map((para, idx) => (
+         <p key={idx} style={{ margin: "8px 0", minHeight: "1em" }}>{para}</p>
+        ))
+      : <div>{project.introText}</div>
+    }
+  </div>
+)}
+          </div>
+        )}
+
         {/* Top bar with arrows/label */}
         <div
           className="video-top-bar"
@@ -291,46 +394,46 @@ function ProjectPresentation({ project, onBack }) {
         </div>
         {showCode && (
           <div className="code-block" style={{ width: "92vw", maxWidth: "900px", margin: "18px auto 0 auto", background: "#23272e", borderRadius: "8px", boxShadow: "0 2px 6px #0003", padding: "18px" }}>
-            <div style={{ display: "flex", alignItems: "center", marginBottom: "4px", justifyContent: "space-between" }}>
-              <div>
-                {codeFiles.length > 1 && (
-                  <>
-                    <button onClick={prevCode}>&larr;</button>
-                    <span style={{ margin: "0 8px" }}>
-                      {codeIndex + 1} / {codeFiles.length}
-                    </span>
-                    <button onClick={nextCode}>&rarr;</button>
-                  </>
+              <div style={{ display: "flex", alignItems: "center", marginBottom: "4px", justifyContent: "space-between" }}>
+                <div>
+                  {codeFiles.length > 1 && (
+                    <>
+                      <button onClick={prevCode}>&larr;</button>
+                      <span style={{ margin: "0 8px" }}>
+                        {codeIndex + 1} / {codeFiles.length}
+                      </span>
+                      <button onClick={nextCode}>&rarr;</button>
+                    </>
+                  )}
+                  <span style={{ marginLeft: 8, fontSize: "1em", color: "#b2b2b2" }}>{currentCodeMeta.label}</span>
+                </div>
+                {currentGitHubBlobUrl && (
+                  <a href={currentGitHubBlobUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#4078c0", textDecoration: "underline", fontWeight: "bold" }}>
+                    View on GitHub
+                  </a>
                 )}
-                <span style={{ marginLeft: 8, fontSize: "1em", color: "#b2b2b2" }}>{currentCodeMeta.label}</span>
               </div>
-              {currentGitHubBlobUrl && (
-                <a href={currentGitHubBlobUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#4078c0", textDecoration: "underline", fontWeight: "bold" }}>
-                  View on GitHub
-                </a>
+              {codeErrors[codeIndex] && (
+                <div style={{ color: "red", marginBottom: 8 }}>{codeErrors[codeIndex]}</div>
               )}
+              <div style={{ width: "100%", overflowX: "auto" }}>
+                <SyntaxHighlighter
+                  language={currentCodeMeta.language || "csharp"}
+                  style={oneDark}
+                  wrapLongLines={false}
+                  showLineNumbers
+                  startingLineNumber={startLine}
+                  customStyle={{
+                    minHeight: "120px",
+                    fontSize: "1.08em",
+                    background: "#23272e",
+                    borderRadius: "8px"
+                  }}
+                >
+                  {codeToShow}
+                </SyntaxHighlighter>
+              </div>
             </div>
-            {codeErrors[codeIndex] && (
-              <div style={{ color: "red", marginBottom: 8 }}>{codeErrors[codeIndex]}</div>
-            )}
-            <div style={{ width: "100%", overflowX: "auto" }}>
-              <SyntaxHighlighter
-                language={currentCodeMeta.language || "csharp"}
-                style={oneDark}
-                wrapLongLines={false}
-                showLineNumbers
-                startingLineNumber={startLine}
-                customStyle={{
-                  minHeight: "120px",
-                  fontSize: "1.08em",
-                  background: "#23272e",
-                  borderRadius: "8px"
-                }}
-              >
-                {codeToShow}
-              </SyntaxHighlighter>
-            </div>
-          </div>
         )}
       </div>
     </div>
