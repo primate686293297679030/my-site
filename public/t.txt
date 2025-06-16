@@ -1,0 +1,138 @@
+public void OnLeafCollision()
+    {
+        OnLeafPickUp.Invoke();
+    }
+
+   public void OnHealthCollision()
+   {
+       OnHealthPickUp.Invoke();
+   }
+
+
+ public UnityEvent OnLeafPickUp;
+    public UnityEvent OnHealthPickUp;
+
+
+
+
+public class LerpToPlayer : MonoBehaviour
+{
+ 
+     
+     
+     //public delegate void AddPickUp(int points,GameObject gameObject);
+     //public static event AddPickUp onAddPickUp;
+     
+     
+     
+     private bool IsLerping=false;
+     
+     private Rigidbody rb;
+     private bool TimerIsActive;
+     
+     
+     public int Points;
+     //public ScriptableEventVoid OnPickup;
+     public Vector3Var playerPos;
+
+     public float Timer=1;
+     private float distance;
+     
+     public float PickUpSpeed = 3;
+     private float pickUpSpeed=14;
+     
+  
+     
+    public Vector3 Playerpos
+    {
+       get { return playerPos.Value; }
+     
+    }
+    private void Start()
+    {
+      // icallevent = GetComponent<ICallEvent>();
+       //rb = GetComponent<Rigidbody>();
+    }
+  
+    private void Update()
+    {
+        distance = (gameObject.transform.position - playerPos.Value).magnitude;
+        if (TimerIsActive == true)
+        {
+           timer();   
+        }
+        
+    }
+    
+    public void StartLerp()
+     {
+        
+        if (!IsLerping)
+        {
+           StartCoroutine(LerpLoop());
+           IsLerping = true;
+        }
+        
+  
+     }
+  
+     private IEnumerator LerpLoop()
+     { 
+        TimerIsActive = true;
+        while (distance != 0)
+        {
+           
+          
+             gameObject.transform.position = Vector3.Lerp(gameObject.transform.position, playerPos.Value,
+                PickUpSpeed * Time.deltaTime);
+             
+             yield return new WaitForEndOfFrame();
+        }
+
+     }
+  
+     private void OnTriggerEnter(Collider other) {
+        if (other.CompareTag("Player"))
+        {
+
+
+           if (gameObject.tag == "Leaf")
+           {
+              other.gameObject.GetComponent<PlayerManager>()?.OnLeafCollision(); 
+           }
+           else if (gameObject.tag == "Berry")
+           {
+              other.gameObject.GetComponent<PlayerManager>()?.OnHealthCollision();
+           }
+          
+           Destroy(gameObject);
+
+          
+        } 
+     }
+
+     void timer()
+     {
+       
+    
+        if (Timer > 0)
+        {
+            Debug.Log(Timer);
+            Debug.Log(Time.deltaTime);
+           Timer -= Time.deltaTime;
+        }
+        else if (Timer <= 0)
+        {
+
+           pickUpSpeed = PickUpSpeed;
+           PickUpSpeed = 30;
+        }
+        
+     }
+  
+   
+     
+  
+}
+
+

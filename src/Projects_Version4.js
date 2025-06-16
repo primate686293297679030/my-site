@@ -2,10 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-// === CONFIGURE YOUR GITHUB REPO INFO HERE ===
-const githubRepoOwner = "primate686293297679030"; // <-- change this
-const githubRepoName = "HamraGrodor";    // <-- change this
-const githubDefaultBranch = "main";      // or "master" or your branch
+
 
 // === PROJECT DATA: Each project now has 'introText' and 'introImage' fields ===
 const projects = [
@@ -63,18 +60,36 @@ const projects = [
     title: "",
     image: "_Z75OQ.png",
     description: "Game Project 2",
-    introText: "Gameproject 3 at futuregames",
+    introText: "Gameproject 2 at futuregames",
     // introImage: "/project2-header.jpg", // You can add this if you have an image
-    presentations: [
+  presentations: [
+  {
+    videoSrc: "/PickingUpLeafs.mp4",
+    label: "Picking Up Leafs code",
+    codeFiles: [
       {
-        videoSrc: "/MyVideo_13.mp4",
-        label: "Physics",
-        codeFiles: [
+  
+        language: "csharp",
+        localFileSrc: "/LerpToPlayer.txt",
+        label: "AnotherManager.cs (Line 22)"
+      }
+    ]
+  },
+  {
+    
+    label: "PickUpRange",
+    codeFiles: [
+      {
+  
+        language: "csharp",
+        localFileSrc: "/PickUpRange.txt",
+        label: "PickUpRange.cs (Line 22)"
+      },
           {
-            githubFilePath: "Assets/Scripts/AnotherManager.cs",
-            githubLine: 22,
+            githubFilePath: "Assets/Scripts/GameManager.cs",
+            githubLine: "400-415",
             language: "csharp",
-            label: "AnotherManager.cs (Line 22)"
+            label: "GameManager.cs (Lines 400-415)"
           }
         ]
       }
@@ -83,13 +98,37 @@ const projects = [
   {
     title: "",
     image: "/11hQRA.png",
-    description: "Game Project 3",
+    description: "Game Project 3.",
     introText: "Gameproject 3 at futuregames",
     // introImage: "/project2-header.jpg", // You can add this if you have an image
     presentations: [
+       {
+        imageSrc: "/CarnageAtCastleMoon-Map.png",
+        label: "SpawnPoints",
+        codeFiles: [
+          {
+            githubFilePath: "Assets/Scripts/GameAI.cs",
+            githubLine: "10-25",
+            language: "csharp",
+            label: "GameAI.cs (Lines 10-25)"
+          }
+    ]
+  },
       {
-        videoSrc: "/MyVideo_13.mp4",
-        label: "Physics",
+        videoSrc: "/CaCMSpawning.mp4",
+        label: "Spawning",
+        codeFiles: [
+          {
+            githubFilePath: "Assets/Scripts/AnotherManager.cs",
+            githubLine: 22,
+            language: "csharp",
+            label: "AnotherManager.cs (Line 22)"
+          }
+        ]
+      },
+       {
+        videoSrc: "/CacMgun.mp4",
+        label: "Gun",
         codeFiles: [
           {
             githubFilePath: "Assets/Scripts/AnotherManager.cs",
@@ -101,7 +140,7 @@ const projects = [
       }
     ]
   },
- 
+
    {
     title: "",
     image: "/swa_UZ.png",
@@ -110,8 +149,8 @@ const projects = [
     // introImage: "/project2-header.jpg", // You can add this if you have an image
     presentations: [
       {
-        videoSrc: "/MyVideo_13.mp4",
-        label: "Physics",
+        videoSrc: "/SMOL.mp4",
+        label: "MagnetGun",
         codeFiles: [
           {
             githubFilePath: "Assets/Scripts/AnotherManager.cs",
@@ -123,22 +162,27 @@ const projects = [
       }
     ]
   },
-   {
-    title: "",
-    image: "/ecsSpacegame.png",
-    description: "Unity Entity Component System.",
-    introText: "Gameproject 3 at futuregames",
-    // introImage: "/project2-header.jpg", // You can add this if you have an image
+     {
+    title: "SpaceShooter ECS",
+    repoOwner: "primate686293297679030",
+    repoName: "spaceshooter-ECS",
+    defaultBranch: "main",
+    image: "/spaceshooter-thumb.png",
+    description: "A Unity ECS-based space shooter. Featuring entity collision and performant gameplay.",
+    introText: [
+      "This project demonstrates an ECS-based approach for performant 2D games in Unity.",
+      "It showcases custom systems for entity collision and optimized movement logic."
+    ],
     presentations: [
       {
-        videoSrc: "/MyVideo_13.mp4",
-        label: "Physics",
+        videoSrc: "/spaceshooter-demo.mp4",
+        label: "Entity Collision System",
         codeFiles: [
           {
-            githubFilePath: "Assets/Scripts/AnotherManager.cs",
-            githubLine: 22,
+            githubFilePath: "spaceshooter/Assets/entitycolision/EntityCollisionSystem.cs",
+            githubLine: "1-50", // Adjust as needed to a real line range
             language: "csharp",
-            label: "AnotherManager.cs (Line 22)"
+            label: "EntityCollisionSystem.cs (Lines 1-50)"
           }
         ]
       }
@@ -147,9 +191,9 @@ const projects = [
 ];
 
 // --- Utility functions ---
-function getGitHubBlobUrl({ githubFilePath, githubLine }) {
+function getGitHubBlobUrl({ repoOwner, repoName, defaultBranch, githubFilePath, githubLine }) {
   if (!githubFilePath) return null;
-  let url = `https://github.com/${githubRepoOwner}/${githubRepoName}/blob/${githubDefaultBranch}/${githubFilePath}`;
+  let url = `https://github.com/${repoOwner}/${repoName}/blob/${defaultBranch}/${githubFilePath}`;
   if (githubLine) {
     if (typeof githubLine === "number" || /^\d+$/.test(githubLine)) {
       url += `#L${githubLine}`;
@@ -160,9 +204,9 @@ function getGitHubBlobUrl({ githubFilePath, githubLine }) {
   }
   return url;
 }
-function getRawGitHubUrl({ githubFilePath }) {
+function getRawGitHubUrl({ repoOwner, repoName, defaultBranch, githubFilePath }) {
   if (!githubFilePath) return null;
-  return `https://raw.githubusercontent.com/${githubRepoOwner}/${githubRepoName}/${githubDefaultBranch}/${githubFilePath}`;
+  return `https://raw.githubusercontent.com/${repoOwner}/${repoName}/${defaultBranch}/${githubFilePath}`;
 }
 function getHighlightLines(githubLine) {
   if (!githubLine) return [];
@@ -215,39 +259,82 @@ function ProjectPresentation({ project, onBack }) {
     if (!showCode) return;
     if (!loadedSnippets[codeIndex]) {
       const codeMeta = codeFiles[codeIndex];
-      const url = getRawGitHubUrl(codeMeta);
-      fetch(url)
-        .then((res) => {
-          if (!res.ok) throw new Error("Code file not found on GitHub.");
-          return res.text();
-        })
-        .then((text) => {
-          setCodeSnippets((prev) => {
-            const next = [...prev];
-            next[codeIndex] = text;
-            return next;
+
+      // If codeMeta.localFileSrc is present, load from local file
+      if (codeMeta.localFileSrc) {
+        fetch(codeMeta.localFileSrc)
+          .then((res) => {
+            if (!res.ok) throw new Error("File not found.");
+            return res.text();
+          })
+          .then((text) => {
+            setCodeSnippets((prev) => {
+              const next = [...prev];
+              next[codeIndex] = text;
+              return next;
+            });
+            setLoadedSnippets((prev) => {
+              const next = [...prev];
+              next[codeIndex] = true;
+              return next;
+            });
+            setCodeErrors((prev) => {
+              const next = [...prev];
+              next[codeIndex] = null;
+              return next;
+            });
+          })
+          .catch((err) => {
+            setCodeErrors((prev) => {
+              const next = [...prev];
+              next[codeIndex] = err.message;
+              return next;
+            });
           });
-          setLoadedSnippets((prev) => {
-            const next = [...prev];
-            next[codeIndex] = true;
-            return next;
-          });
-          setCodeErrors((prev) => {
-            const next = [...prev];
-            next[codeIndex] = null;
-            return next;
-          });
-        })
-        .catch((err) => {
-          setCodeErrors((prev) => {
-            const next = [...prev];
-            next[codeIndex] = err.message;
-            return next;
-          });
+        return;
+      }
+
+      // Otherwise, fall back to GitHub fetching logic
+      if (codeMeta.githubFilePath) {
+        const url = getRawGitHubUrl({
+          repoOwner: project.repoOwner,
+          repoName: project.repoName,
+          defaultBranch: project.defaultBranch,
+          githubFilePath: codeMeta.githubFilePath,
         });
+        fetch(url)
+          .then((res) => {
+            if (!res.ok) throw new Error("Code file not found on GitHub.");
+            return res.text();
+          })
+          .then((text) => {
+            setCodeSnippets((prev) => {
+              const next = [...prev];
+              next[codeIndex] = text;
+              return next;
+            });
+            setLoadedSnippets((prev) => {
+              const next = [...prev];
+              next[codeIndex] = true;
+              return next;
+            });
+            setCodeErrors((prev) => {
+              const next = [...prev];
+              next[codeIndex] = null;
+              return next;
+            });
+          })
+          .catch((err) => {
+            setCodeErrors((prev) => {
+              const next = [...prev];
+              next[codeIndex] = err.message;
+              return next;
+            });
+          });
+      }
     }
     // eslint-disable-next-line
-  }, [showCode, codeIndex, codeFiles]);
+  }, [showCode, codeIndex, codeFiles, project.repoOwner, project.repoName, project.defaultBranch]);
 
   // Video and code navigation handlers
   const handlePlayPause = () => {
@@ -271,9 +358,19 @@ function ProjectPresentation({ project, onBack }) {
   const nextCode = () => setCodeIndex((i) => (i + 1) % codeFiles.length);
   const prevCode = () => setCodeIndex((i) => (i - 1 + codeFiles.length) % codeFiles.length);
 
-  // For line range display
+  // For line range display and code source
   const currentCodeMeta = codeFiles[codeIndex];
-  let codeToShow = codeSnippets[codeIndex] || "// Loading code…";
+
+  let codeToShow = "";
+  if (currentCodeMeta.code) {
+    codeToShow = currentCodeMeta.code.trim();
+  } else if (currentCodeMeta.localFileSrc) {
+    codeToShow = codeSnippets[codeIndex] || "// Loading code…";
+  } else {
+    codeToShow = codeSnippets[codeIndex] || "// Loading code…";
+  }
+
+  
   let startLine = 1;
   if (typeof currentCodeMeta.githubLine === "string" && /^\d+-\d+$/.test(currentCodeMeta.githubLine)) {
     const [start, end] = currentCodeMeta.githubLine.split("-").map(Number);
@@ -375,18 +472,28 @@ function ProjectPresentation({ project, onBack }) {
 
         {/* Video */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", background: "#23272e" }}>
-          <video
-            ref={videoRef}
-            width="640"
-            height="360"
-            src={presentation.videoSrc}
-            controls={false}
-            loop={isLooping}
-            onPlay={handleVideoPlay}
-            onPause={handleVideoPause}
-            style={{ borderRadius: "10px", margin: "24px 0 0 0", boxShadow: "0 2px 8px #0005" }}
-          />
-        </div>
+  {presentation.videoSrc ? (
+    <video
+      ref={videoRef}
+      width="640"
+      height="360"
+      src={presentation.videoSrc}
+      controls={false}
+      loop={isLooping}
+      onPlay={handleVideoPlay}
+      onPause={handleVideoPause}
+      style={{ borderRadius: "10px", margin: "24px 0 0 0", boxShadow: "0 2px 8px #0005" }}
+    />
+  ) : presentation.imageSrc ? (
+    <img
+      src={presentation.imageSrc}
+      alt={presentation.label}
+      width="640"
+      height="360"
+      style={{ borderRadius: "10px", margin: "24px 0 0 0", boxShadow: "0 2px 8px #0005", objectFit: "cover" }}
+    />
+  ) : null}
+</div>
         <div className="video-bottom-bar" style={{ background: "#23272e", borderBottomLeftRadius: "14px", borderBottomRightRadius: "14px", borderTop: "1px solid #343942", display: "flex", alignItems: "center", justifyContent: "center", gap: "24px", padding: "16px 0", fontSize: "1.05em" }}>
           <button onClick={handlePlayPause}>{isPlaying ? "Pause" : "Play"}</button>
           <button onClick={handleLoop}>{isLooping ? "Loop: On" : "Loop: Off"}</button>

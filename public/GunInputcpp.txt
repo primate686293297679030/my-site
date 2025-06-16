@@ -1,0 +1,98 @@
+#include "GunInput.h"
+#include "Components/SceneComponent.h"
+#include "Components/InputComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "GPPlayerController.h"
+#include "GP_EnemyPrototype.h"
+#include "Camera/CameraComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
+
+class AGP_EnemyPrototype;
+
+UGunInput::UGunInput()
+{
+	FP_MuzzleLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzleLocation"));
+	FP_MuzzleLocation->SetRelativeLocation(FVector(0.2f, 48.4f, -10.6f));
+	// Default offset from the character location for projectiles to spawn
+	GunOffset = FVector(0.0f, 0.0f, 10.0f);
+}
+void UGunInput::BeginPlay()
+{
+	Super::BeginPlay();	
+	Owner =Cast <AGPPlayerController> (GetOwner());
+	Owner->GetWorldTimerManager().SetTimer(TimerHandle, this, &UGunInput::FireShot, TimeBetweenShots, true);
+	Owner->GetWorldTimerManager().PauseTimer(TimerHandle);
+}
+
+void UGunInput::StartFire()
+{
+	if (Autofire)
+	{
+	if (Owner->GetGameTimeSinceCreation() - LastShotTime > TimeBetweenShots)
+	{
+	   FireShot();
+	   Owner->GetWorldTimerManager().UnPauseTimer(TimerHandle);
+	}
+	else
+	{
+	   float remainingtime = Owner->GetWorldTimerManager().GetTimerRemaining(TimerHandle);
+	   Owner->GetWorldTimerManager().SetTimer(TimerHandle, this, &UGunInput::FireShot, TimeBetweenShots, true, remainingtime);
+	}
+	}
+    else{FireShot();}
+}
+
+void UGunInput::StopFire()
+{
+	if (Autofire)
+	{
+	   Owner->GetWorldTimerManager().SetTimer(TimerHandle, this, &UGunInput::FireShot, TimeBetweenShots, true);
+	   Owner->GetWorldTimerManager().PauseTimer(TimerHandle);
+	}
+}
+
+void UGunInput::FireShot()
+{
+    if (Autofire)
+    {LastShotTime = Owner->GetGameTimeSinceCreation();}
+    FHitResult Hit;
+    const float WeaponRange = 200000.f;
+    StartTrace = Owner->CameraComponent->GetComponentLocation();
+    EndTrace = (Owner->CameraComponent->GetForwardVector() * WeaponRange) + StartTrace;
+    FCollisionQueryParams QueryParams = FCollisionQueryParams(SCENE_QUERY_STAT(WeaponTrace), false, Owner);
+    FVector StartPos = Owner->FP_Gun->GetSocketLocation(FName("Muzzle")) + Owner->FP_Gun->GetRightVector() * 140.f;
+    FVector HitPos = FVector::ZeroVector;
+
+	if (GetWorld()->LineTraceSingleByChannel(Hit, StartTrace, EndTrace, ECC_Pawn, QueryParams))
+	{
+	if (ImpactParticles != nullptr)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation
+		(GetWorld(), ImpactParticles, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+		HitPos = Hit.ImpactPoint;
+	}
+	if (AGP_EnemyPrototype* Enemy = Cast<AGP_EnemyPrototype>(Hit.GetActor())){Enemy->Damage(10.f);}
+	}
+	SpawnVFX(StartPos, EndTrace, HitPos);
+	if (MuzzleParticles)
+	{
+		FVector MuzzleLocation = Owner->FP_Gun->GetSocketLocation(FName("Muzzle")) + Owner->FP_Gun->GetRightVector() * 140.f;
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), MuzzleParticles, MuzzleLocation);
+	}
+	
+	// Play the sound if not nullptr
+	if (FireSound != nullptr){UGameplayStatics::PlaySoundAtLocation(this, FireSound, Owner->GetActorLocation());}
+	if (Owner->FireAnimation != nullptr)
+	{
+		// Get the animation object for the arms mesh
+		UAnimInstance* AnimInstance = Owner->Mesh1P->GetAnimInstance();
+		if (AnimInstance != nullptr){AnimInstance->Montage_Play(Owner->FireAnimation, 1.f);}
+	}
+}
+
+void UGunInput::TimerElapsed(){}
+// BP Event
+void UGunInput::SpawnVFX_Implementation(FVector a, FVector b, FVector HitLocation){	}
+//fire
+void UGunInput::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent){check(PlayerInputComponent);}
